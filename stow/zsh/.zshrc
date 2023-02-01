@@ -111,12 +111,48 @@ source $ZSH/oh-my-zsh.sh
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/Users/cl0rkster/.sdkman"
 [[ -s "/Users/cl0rkster/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/cl0rkster/.sdkman/bin/sdkman-init.sh"
+
 export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
-eval "$(direnv hook zsh)"
+
+if [ $(command -v fzf-share) ]; then
+  source "$(fzf-share)/key-bindings.zsh"
+  source "$(fzf-share)/completion.zsh"
+fi
+
+# fzf
+export FZF_DEFAULT_COMMAND='fd --type f --color=never --hidden'
+export FZF_DEFAULT_OPTS='--no-height --color=bg+:#343d46,gutter:-1,pointer:#ff3c3c,info:#0dbc79,hl:#0dbc79,hl+:#23d18b'
+
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :50 {}'"
+
+export FZF_ALT_C_COMMAND='fd --type d . --color=never --hidden'
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -50'"
+
+# MANPAGER
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
 if [[ $(command -v keychain) && -e ~/.ssh/id_ed25519 ]]; then
   eval `keychain --eval --quiet id_ed25519`
 fi
+
+if [ $(command -v direnv) ]; then
+  export DIRENV_LOG_FORMAT=
+  eval "$(direnv hook zsh)"
+fi
+
+alias v="vim"
+
+if [ $(command -v nvim) ]; then
+  export EDITOR=$(which nvim)
+  alias vim=$EDITOR
+  alias v=$EDITOR
+fi
+
+export SUDO_EDITOR=$EDITOR
+export VISUAL=$EDITOR
+
 alias fgcor='git checkout --track $(git branch --remote | fzf)'
 alias gitalias='alias | grep git | fzf'
 
